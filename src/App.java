@@ -1,9 +1,5 @@
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.Stack;
-
-import controllers.MaquinaController;
 import models.Maquina;
 
 public class App {

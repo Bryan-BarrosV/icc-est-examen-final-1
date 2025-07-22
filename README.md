@@ -99,4 +99,3 @@ Para validar tu implementación se ejecutarán pruebas unitarias sobre:
 | 🔷 Método C – `agruparPorRiesgo` | Agrupa correctamente en TreeMap con Queue por riesgo                                                           | 1.5        |
 | 🔷 Método D – `explotarGrupo`    | Identifica correctamente el grupo más numeroso y, en caso de empate, el de mayor riesgo. Invierte orden a LIFO |  1.5       |
 | **Total**                        |                                                                                                                | **9.0**    |
-
