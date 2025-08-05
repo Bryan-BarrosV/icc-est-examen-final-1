@@ -26,12 +26,12 @@ public class MaquinaController {
     public TreeSet<Maquina> ordenarPorSubred(Stack<Maquina> pila) {
         TreeSet<Maquina> ordenadas = new TreeSet<>(new Comparator<Maquina>() {
             @Override
-            public int compare(Maquina m1, Maquina m2) {
-                int subredCompare = Integer.compare(m2.getSubred(), m1.getSubred());
+            public int compare(Maquina maquina1, Maquina maquina2) {
+                int subredCompare = Integer.compare(maquina2.getSubred(), maquina1.getSubred());
                 if (subredCompare != 0) {
                     return subredCompare;
                 }
-                return m1.getNombre().compareTo(m2.getNombre());
+                return maquina1.getNombre().compareTo(maquina2.getNombre());
             }
         });
         while (!pila.isEmpty()) {
@@ -42,10 +42,10 @@ public class MaquinaController {
 
     public TreeMap<Integer, Queue<Maquina>> agruparPorRiesgo(List<Maquina> maquinas) {
         TreeMap<Integer, Queue<Maquina>> mapa = new TreeMap<>();
-        for (Maquina m : maquinas) {
-            int riesgo = m.getRiesgo();
+        for (Maquina maquina : maquinas) {
+            int riesgo = maquina.getRiesgo();
             mapa.putIfAbsent(riesgo, new LinkedList<>());
-            mapa.get(riesgo).add(m);
+            mapa.get(riesgo).add(maquina);
         }
         return mapa;
     }
@@ -71,8 +71,8 @@ public class MaquinaController {
         Queue<Maquina> grupo = mapa.get(riesgoSeleccionado);
         Stack<Maquina> resultado = new Stack<>();
         if (grupo != null) {
-            for (Maquina m : grupo) {
-                resultado.push(m);
+            for (Maquina maquina : grupo) {
+                resultado.push(maquina);
             }
         }
         return resultado;

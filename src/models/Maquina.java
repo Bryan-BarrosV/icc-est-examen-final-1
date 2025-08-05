@@ -6,81 +6,87 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Maquina {
-  private String nombre;
-  private String ip;
-  private List<Integer> codigos;
-  private int subred;
-  private int riesgo;
+    private String nombre;
+    private String ip;
+    private List<Integer> codigos;
 
-  public Maquina(String var1, String var2, List<Integer> var3) {
-    this.nombre = var1;
-    this.ip = var2;
-    this.codigos = var3;
-    this.riesgo = this.calcularRiesgo();
-    this.subred = this.calcularSubred();
-  }
-
-  private int calcularSubred() {
-
-    return Integer.parseInt(ip.split("\\.")[3]);
-  }
-
-  private int calcularRiesgo() {
-    int suma = 0;
-    for (int codigo : codigos) {
-      if (codigo % 3 == 0) {
-        suma += codigo;
-      }
+    public Maquina(String nombre, String ip, List<Integer> codigos) {
+        this.nombre = nombre;
+        this.ip = ip;
+        this.codigos = codigos;
     }
 
-    Set<Character> var7 = new HashSet<>();
-
-    for (Character character : nombre.toCharArray()) {
-      if (character != ' ') {
-        var7.add(character);
-      }
-
+    public String getNombre() {
+        return nombre;
     }
 
-    return suma * var7.size();
-  }
-
-  public String getNombre() {
-    return this.nombre;
-  }
-
-  public String getIp() {
-    return this.ip;
-  }
-
-  public List<Integer> getCodigos() {
-    return this.codigos;
-  }
-
-  public int getSubred() {
-    return this.subred;
-  }
-
-  public int getRiesgo() {
-    return this.riesgo;
-  }
-
-  public String toString() {
-    return this.nombre + " - Subred: " + this.subred + " - Riesgo: " + this.riesgo;
-  }
-
-  public boolean equals(Object var1) {
-    if (this == var1) {
-      return true;
-    } else if (!(var1 instanceof Maquina)) {
-      return false;
-    } else {
-      Maquina var2 = (Maquina) var1;
-      return this.subred == var2.subred && Objects.equals(this.nombre, var2.nombre);
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
-  }
 
-  public int hashCode() {
-    return Objects.hash(new Object[] { this.nombre, this.subred });
-  }
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public List<Integer> getCodigos() {
+        return codigos;
+    }
+
+    public void setCodigos(List<Integer> codigos) {
+        this.codigos = codigos;
+    }
+
+    public int getSubred() {
+        String[] octetos = ip.split("\\.");
+        if (octetos.length >= 3) {
+            try {
+                return Integer.parseInt(octetos[2]);
+            } catch (NumberFormatException e) {
+                System.err.println("Error al parsear la subred de la IP: " + ip + ". Detalles: " + e.getMessage());
+                return -1; 
+            }
+        }
+        return -1;
+    }
+
+    public int getRiesgo() {
+        int sumaCodigosDivisiblesPor5 = 0;
+        if (codigos != null) {
+            for (Integer codigo : codigos) {
+                if (codigo % 5 == 0) {
+                    sumaCodigosDivisiblesPor5 += codigo;
+                }
+            }
+        }
+
+        Set<Character> caracteresUnicos = new HashSet<>();
+        if (nombre != null) {
+            String nombreSinEspacios = nombre.replace(" ", "");
+            for (char c : nombreSinEspacios.toCharArray()) {
+                caracteresUnicos.add(c);
+            }
+        }
+        int numeroCaracteresUnicos = caracteresUnicos.size();
+
+        return sumaCodigosDivisiblesPor5 * numeroCaracteresUnicos;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre, ip, codigos);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Maquina other = (Maquina) obj;
+        return Objects.equals(nombre, other.nombre) &&
+               Objects.equals(ip, other.ip) &&
+               Objects.equals(codigos, other.codigos);
+    }
 }
