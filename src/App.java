@@ -1,15 +1,63 @@
+import controllers.MaquinaController;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import models.Maquina;
 
 public class App {
     public static void main(String[] args) throws Exception {
         List<Maquina> maquinas = crearMaquinas();
+        System.out.println("--- Máquinas Creadas ---");
+        maquinas.forEach(m -> System.out.println("Nombre: " + m.getNombre() + ", IP: " + m.getIp() + ", Subred: " + m.getSubred() + ", Riesgo: " + m.getRiesgo()));
+        System.out.println("\n");
 
+        MaquinaController controller = new MaquinaController();
+
+        int umbralSubred = 100;
+        Stack<Maquina> maquinasFiltradas = controller.filtrarPorSubred(maquinas, umbralSubred);
+        System.out.println("--- Máquinas Filtradas por Subred (Umbral > " + umbralSubred + ") ---");
+        if (maquinasFiltradas.isEmpty()) {
+            System.out.println("No se encontraron máquinas con subred mayor a " + umbralSubred);
+        } else {
+            maquinasFiltradas.forEach(m -> System.out.println("Nombre: " + m.getNombre() + ", Subred: " + m.getSubred()));
+        }
+        System.out.println("\n");
+
+        Stack<Maquina> maquinasFiltradasParaOrdenar = new Stack<>();
+        maquinasFiltradas.forEach(maquinasFiltradasParaOrdenar::push);
+
+        TreeSet<Maquina> maquinasOrdenadas = controller.ordenarPorSubred(maquinasFiltradasParaOrdenar);
+        System.out.println("--- Máquinas Ordenadas por Subred (de la pila filtrada, DESC Subred, ASC Nombre) ---");
+        if (maquinasOrdenadas.isEmpty()) {
+            System.out.println("No hay máquinas para ordenar.");
+        } else {
+            maquinasOrdenadas.forEach(m -> System.out.println("Nombre: " + m.getNombre() + ", Subred: " + m.getSubred()));
+        }
+        System.out.println("\n");
+
+        TreeMap<Integer, Queue<Maquina>> gruposPorRiesgo = controller.agruparPorRiesgo(maquinas);
+        System.out.println("--- Máquinas Agrupadas por Riesgo ---");
+        gruposPorRiesgo.forEach((riesgo, cola) -> {
+            System.out.println("Riesgo " + riesgo + ":");
+            cola.forEach(m -> System.out.println("  - " + m.getNombre() + " (IP: " + m.getIp() + ", Subred: " + m.getSubred() + ", Riesgo: " + m.getRiesgo() + ")"));
+        });
+
+        Stack<Maquina> grupoExplotado = controller.explotarGrupo(gruposPorRiesgo);
+        System.out.println("--- Grupo 'Explotado' (Máximo en Cantidad/Riesgo, orden LIFO) ---");
+        if (grupoExplotado.isEmpty()) {
+            System.out.println("No se pudo explotar ningún grupo.");
+        } else {
+            while (!grupoExplotado.isEmpty()) {
+                Maquina m = grupoExplotado.pop();
+                System.out.println("Nombre: " + m.getNombre() + ", Riesgo: " + m.getRiesgo());
+            }
+        }
     }
 
     static List<Maquina> crearMaquinas() {
-
         List<Maquina> maquinas = Arrays.asList(
                 new Maquina("Controlador20", "155.25.220.238", Arrays.asList(21, 30, 29, 16)),
                 new Maquina("DB3", "172.144.210.32", Arrays.asList(4, 29, 16, 6, 2)),
@@ -60,8 +108,8 @@ public class App {
                 new Maquina("DB4", "87.64.240.164", Arrays.asList(17, 14, 5, 23)),
                 new Maquina("Nodo7", "23.248.75.5", Arrays.asList(18, 28, 10, 27, 29)),
                 new Maquina("Nodo6", "169.238.150.174", Arrays.asList(6, 14, 3)),
-                new Maquina("DB13", "71.248.50.86", Arrays.asList(17, 11, 12)));
+                new Maquina("DB13", "71.248.50.86", Arrays.asList(17, 11, 12))
+        );
         return maquinas;
-
     }
 }
